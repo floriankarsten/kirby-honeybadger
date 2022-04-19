@@ -2,26 +2,26 @@
 @include_once __DIR__ . '/vendor/autoload.php';
 
 Kirby::plugin('floriankarsten/kirby-honeybadger', [
-	'fatal' => function ($kirby, $exception) {
-		if (option('floriankarsten.kirby-honeybadger.enabled') && option('floriankarsten.kirby-honeybadger.apiKey')) {
-			$honeybadger = \Honeybadger::new([
-				'api_key' => option('floriankarsten.kirby-honeybadger.apiKey')
-			]);
-			$honeybadger->notify($exception);
-		}
-
-		include $kirby->root('templates') . '/fatal.php';
-	},
+	'options'=> [
+		'enabled' => false,
+		'apiKey' => null,
+	],
 	'siteMethods' => [
         'honeybadger' => function ($exception) {
-			if (option('floriankarsten.kirby-honeybadger.enabled') && option('floriankarsten.kirby-honeybadger.apiKey')) {
-				$honeybadger = \Honeybadger::new([
-					'api_key' => option('floriankarsten.kirby-honeybadger.apiKey')
-				]);
-				$honeybadger->notify($exception);
-				return true;
-			}
-			return false;
+			$honeybadger = \Floriankarsten\Kirbyhoneybadger::singleton();
+			$honeybadger->notify($exception);
         }
     ]
 ]);
+
+
+if (! class_exists('Floriankarsten\Kirbyhoneybadger')) {
+    require_once __DIR__ . '/classes/Log.php';
+}
+
+if (! function_exists('honeybadger')) {
+    function honeybadger($exception)
+    {
+        return \Floriankarsten\Kirbyhoneybadger::singleton()->notify($exception);
+    }
+}

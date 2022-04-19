@@ -14,6 +14,9 @@
         "honeybadger-io/honeybadger-php": "^2.11"
     },
     "autoload": {
+        "psr-4": {
+            "Floriankarsten\\": "src/"
+        }
     },
     "config": {
         "optimize-autoloader": true
